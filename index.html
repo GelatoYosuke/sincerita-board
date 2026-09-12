@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>進捗ボード</title>
+<meta name="description" content="SINCERITA 社内プロジェクト進捗共有">
+
+<!-- ホーム画面に追加したときの見え方 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="進捗ボード">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+<style>
+  :root {
+    --bg: #F6F3EC;
+    --ink: #2B2622;
+    --ink-2: #6F655B;
+    --choco: #5A4632;
+    --line: #E6E0D6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", system-ui, sans-serif;
+    background: var(--bg); color: var(--ink);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 32px 24px; text-align: center; -webkit-text-size-adjust: 100%;
+  }
+  .icon { width: 88px; height: 88px; border-radius: 20px; box-shadow: 0 2px 10px rgba(43,38,34,.12); }
+  h1 { font-size: 22px; font-weight: 600; color: var(--choco); margin: 18px 0 6px; }
+  p { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.6; }
+  .open {
+    display: inline-block; margin-top: 26px; padding: 14px 34px; border-radius: 999px;
+    background: var(--choco); color: #fff; font-size: 16px; font-weight: 600; text-decoration: none;
+  }
+  .open:active { opacity: .85; }
+  .tip {
+    margin-top: 30px; padding: 14px 16px; max-width: 340px;
+    background: #fff; border: 1px solid var(--line); border-radius: 12px;
+    font-size: 12.5px; color: var(--ink-2); line-height: 1.7; text-align: left;
+  }
+  .tip b { color: var(--ink); font-weight: 600; }
+  /* ホーム画面から開いたときは案内を出さない（自動で転送されるため） */
+  @media (display-mode: standalone) { .tip { display: none; } }
+</style>
+</head>
+<body>
+
+<img class="icon" src="icons/apple-touch-icon.png" alt="">
+<h1>進捗ボード</h1>
+<p>SINCERITA のプロジェクト進捗</p>
+
+<a class="open" id="open" href="#">アプリを開く</a>
+
+<div class="tip">
+  <b>ホーム画面に置くと便利です</b><br>
+  iPhone：共有ボタン → 「ホーム画面に追加」<br>
+  Android：メニュー → 「ホーム画面に追加」
+</div>
+
+<script>
+  // ▼ GASウェブアプリのURL（/exec で終わるもの）に貼り替えてください
+  //    /a/macros/sincerita.jp/ が付いたURLは使わないこと
+  const APP_URL = 'https://script.google.com/macros/s/ここにデプロイIDを貼る/exec';
+
+  // Slack通知などから ?p=P012 付きで開かれた場合、その案件まで引き継ぐ
+  const params = new URLSearchParams(location.search);
+  const p = params.get('p') || '';
+  const target = APP_URL + (/^P\d{3,}$/.test(p) ? ('?p=' + p) : '');
+
+  document.getElementById('open').href = target;
+
+  // ホーム画面のアイコンから開いた場合は、案内を挟まずそのままアプリへ
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (standalone) location.replace(target);
+</script>
+
+</body>
+</html>
